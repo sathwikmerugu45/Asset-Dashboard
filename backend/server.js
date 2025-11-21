@@ -278,6 +278,42 @@ app.get('/api/buildings', async (req, res) => {
   }
 });
 
+// ADMIN: count active assets for a given building (default: Computer Center)
+// Example: GET /admin/count-active-assets?building=Computer%20Center
+app.get('/admin/count-active-assets', async (req, res) => {
+  try {
+    const buildingName = req.query.building ? String(req.query.building) : 'Computer Center';
+
+    // Find building by name (case-insensitive). We use fetchAllRecords to ensure full dataset.
+    const buildings = await fetchAllRecords('Buildings');
+    const building = buildings.find(b => (b.Name || b.name || '') && (String(b.Name || b.name).toLowerCase() === buildingName.toLowerCase()));
+
+    if (!building) {
+      const msg = `Building not found: ${buildingName}`;
+      console.log(`⚠ ${msg}`);
+      return res.status(404).json({ building: buildingName, count: 0, message: msg });
+    }
+
+    // Fetch all assets and count active ones belonging to the building
+    const assets = await fetchAllRecords('Asset');
+    const activeValues = new Set(['Yes', 'Active', true, 1, '1']);
+
+    const count = assets.reduce((acc, a) => {
+      const belongs = (a.Building_Id != null) && (String(a.Building_Id) == String(building.id));
+      const isActive = activeValues.has(a.is_active) || activeValues.has(String(a.is_active));
+      return acc + ((belongs && isActive) ? 1 : 0);
+    }, 0);
+
+    const msg = `Active assets in \"${buildingName}\": ${count}`;
+    console.log(msg);
+
+    res.json({ building: buildingName, buildingId: building.id, count, message: msg });
+  } catch (err) {
+    console.error('Error in admin/count-active-assets:', err.message || err);
+    res.status(500).json({ error: err.message || String(err) });
+  }
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
