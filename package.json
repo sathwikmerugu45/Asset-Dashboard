@@ -1,11 +1,12 @@
 {
-  "name": "asset-dashboard",
+  "name": "asset-dashboard-frontend",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
-    "dev": "cd frontend && npm run dev",
-    "preview": "cd frontend && npm run preview"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.2.0",
