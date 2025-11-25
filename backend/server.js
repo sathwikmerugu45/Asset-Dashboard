@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const NodeCache = require('node-cache');
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 
 const app = express();
 const cache = new NodeCache({ stdTTL: 300 }); // 5 minute cache
