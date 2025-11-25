@@ -1,14 +1,4 @@
-version: 2
-
-services:
-  backend:
-    source: /backend
-    build:
-      commands:
-        - npm install
-    start:
-      command: npm start
-    env:
-      - API_KEY
-      - BASE_URL
-      - PORT=3000
+build:
+  command: cd backend && npm install
+start:
+  command: cd backend && npm start
